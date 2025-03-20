@@ -1,4 +1,5 @@
 import jwt
+import bcrypt  
 import datetime
 from ..models.user import User
 from ..repositories.user_repository import UserRepository
@@ -20,7 +21,7 @@ class AuthService:
     def _verify_password(self, plain_password: str, hashed_password: str):
         # En una aplicación real, usarías bcrypt o similar
         # Por simplicidad, asumimos una comparación directa
-        return plain_password == hashed_password
+        return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
     
     def _generate_token(self, user: User):
         payload = {
