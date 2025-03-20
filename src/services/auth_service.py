@@ -26,7 +26,7 @@ class AuthService:
         payload = {
             "user_id": user.id,
             "username": user.username,
-            "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=24)
+            "exp": datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=24)
         }
         token = jwt.encode(payload, self.secret_key, algorithm="HS256")
         return token
