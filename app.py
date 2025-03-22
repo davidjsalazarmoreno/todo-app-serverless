@@ -1,6 +1,7 @@
 from chalice import Chalice, Response, BadRequestError, UnauthorizedError, NotFoundError
 from src.services.task_service import TaskService
 from src.services.auth_service import AuthService
+import traceback  # Add this import at the top of the file
 from src.repositories.task_repository import TaskRepository
 from src.repositories.user_repository import UserRepository
 from src.utils.exceptions import TaskNotFoundException, AuthenticationException, UnauthorizedAccessException
@@ -9,15 +10,24 @@ import json
 
 app = Chalice(app_name='todo-api')
 
-# Configuración
-MONGO_URI = os.environ.get('MONGO_URI', 'mongodb://localhost:27017/')
-JWT_SECRET = os.environ.get('JWT_SECRET', 'your-secret-key')
+# Configuración Mongo for locaaaaallll and localhost for deploy
+MONGO_URI = os.environ.get('MONGO_URI', 'mongodb://mongo:27017/')
+JWT_SECRET = os.environ.get('JWT_SECRET', 'test-key-for-jwt-token')
 
 # Inicializar dependencias
 task_repository = TaskRepository(MONGO_URI)
 user_repository = UserRepository(MONGO_URI)
 task_service = TaskService(task_repository)
 auth_service = AuthService(user_repository, JWT_SECRET)
+
+from datetime import datetime
+
+
+class DateTimeEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        return super().default(obj)
 
 def get_current_user():
     auth_header = app.current_request.headers.get('Authorization', '')
@@ -52,6 +62,7 @@ def login():
             status_code=401
         )
     except Exception as e:
+        print(e)  # Log the exception for debugging
         return Response(
             body={"error": "Internal server error"},
             status_code=500
@@ -62,13 +73,14 @@ def get_tasks():
     try:
         user = get_current_user()
         tasks = task_service.get_all_tasks(user["user_id"])
-        return {"tasks": [task.dict() for task in tasks]}
+        return {"tasks": json.dumps([task.dict() for task in tasks], cls=DateTimeEncoder) }
     except UnauthorizedError as e:
         return Response(
             body={"error": str(e)},
             status_code=401
         )
     except Exception as e:
+        print(e)  # Log the exception for debugging
         return Response(
             body={"error": "Internal server error"},
             status_code=500
@@ -79,7 +91,7 @@ def get_task(task_id):
     try:
         user = get_current_user()
         task = task_service.get_task_by_id(task_id, user["user_id"])
-        return task.dict()
+        return json.dumps(task, cls=DateTimeEncoder)
     except TaskNotFoundException as e:
         return Response(
             body={"error": str(e)},
@@ -91,6 +103,7 @@ def get_task(task_id):
             status_code=401
         )
     except Exception as e:
+        print(e)  # Log the exception for debugging
         return Response(
             body={"error": "Internal server error"},
             status_code=500
@@ -103,15 +116,18 @@ def create_task():
         request_body = app.current_request.json_body
         task = task_service.create_task(request_body, user["user_id"])
         return Response(
-            body=task.dict(),
+            body=json.dumps(task, cls=DateTimeEncoder),
             status_code=201
         )
     except UnauthorizedError as e:
+        traceback.print_exc()
         return Response(
             body={"error": str(e)},
             status_code=401
         )
     except Exception as e:
+        traceback.print_exc()
+        print(e)  # Log the exception for debugging
         return Response(
             body={"error": "Internal server error"},
             status_code=500
@@ -123,7 +139,7 @@ def update_task(task_id):
         user = get_current_user()
         request_body = app.current_request.json_body
         task = task_service.update_task(task_id, request_body, user["user_id"])
-        return task.dict()
+        return json.dumps(task, cls=DateTimeEncoder)
     except TaskNotFoundException as e:
         return Response(
             body={"error": str(e)},
@@ -135,6 +151,7 @@ def update_task(task_id):
             status_code=401
         )
     except Exception as e:
+        print(e)  # Log the exception for debugging
         return Response(
             body={"error": "Internal server error"},
             status_code=500
@@ -160,6 +177,7 @@ def delete_task(task_id):
             status_code=401
         )
     except Exception as e:
+        print(e)  # Log the exception for debugging
         return Response(
             body={"error": "Internal server error"},
             status_code=500
