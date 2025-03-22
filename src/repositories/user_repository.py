@@ -25,6 +25,9 @@ class UserRepository:
             return User(**user)
         return None
 
+    def user_exists(self, username: str, email: str):
+        return self.collection.find_one({"$or": [{"username": username}, {"email": email}]}) is not None
+
     def create(self, user: User):
         user_dict = user.dict()
         result = self.collection.insert_one(user_dict)

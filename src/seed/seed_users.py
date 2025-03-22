@@ -10,13 +10,13 @@ users = [
     {
         "username": "testuser",
         "email": "testuser@example.com",
-        "password_hash": bcrypt.hashpw("password123".encode('utf-8'), bcrypt.gensalt()).decode('utf-8'),  # Hash the password
+        "hashed_password": bcrypt.hashpw("password123".encode('utf-8'), bcrypt.gensalt()).decode('utf-8'),  # Hash the password
         "is_active": True,
     },
     {
         "username": "admin",
         "email": "admin@example.com",
-        "password_hash": bcrypt.hashpw("adminpassword".encode('utf-8'), bcrypt.gensalt()).decode('utf-8'),
+        "hashed_password": bcrypt.hashpw("adminpassword".encode('utf-8'), bcrypt.gensalt()).decode('utf-8'),
         "is_active": True,
     },
 ]

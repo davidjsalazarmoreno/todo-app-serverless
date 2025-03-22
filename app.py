@@ -40,8 +40,12 @@ def get_current_user():
         return payload
     except AuthenticationException as e:
         raise UnauthorizedError(str(e))
+    
+@app.route('/health', methods=['GET'], api_key_required=False)
+def health_check():
+    return {'status': 'healthy'}
 
-@app.route('/login', methods=['POST'])
+@app.route('/login', methods=['POST'], api_key_required=False)
 def login():
     request_body = app.current_request.json_body
     try:
@@ -62,7 +66,34 @@ def login():
             status_code=401
         )
     except Exception as e:
+        traceback.print_exc()
         print(e)  # Log the exception for debugging
+        return Response(
+            body={"error": "Internal server error"},
+            status_code=500
+        )
+
+@app.route('/register', methods=['POST'], api_key_required=False)  # Make the endpoint public
+def register():
+    request_body = app.current_request.json_body
+    try:
+        username = request_body.get('username')
+        email = request_body.get('email')
+        password = request_body.get('password')
+
+        if not username or not email or not password:
+            return Response(
+                body={"error": "Username, email, and password are required"},
+                status_code=400
+            )
+
+        user = auth_service.register_user(username, email, password)
+        return Response(
+            body={"message": "User registered successfully", "user_id": user.id},
+            status_code=201
+        )
+    except Exception as e:
+        traceback.print_exc()
         return Response(
             body={"error": "Internal server error"},
             status_code=500
@@ -73,7 +104,10 @@ def get_tasks():
     try:
         user = get_current_user()
         tasks = task_service.get_all_tasks(user["user_id"])
-        return {"tasks": json.dumps([task.dict() for task in tasks], cls=DateTimeEncoder) }
+        return Response(
+            body=json.dumps([task.dict() for task in tasks], cls=DateTimeEncoder),  
+            status_code=200
+        )
     except UnauthorizedError as e:
         return Response(
             body={"error": str(e)},
@@ -91,7 +125,7 @@ def get_task(task_id):
     try:
         user = get_current_user()
         task = task_service.get_task_by_id(task_id, user["user_id"])
-        return json.dumps(task, cls=DateTimeEncoder)
+        return json.dumps(task.dict(), cls=DateTimeEncoder)
     except TaskNotFoundException as e:
         return Response(
             body={"error": str(e)},
@@ -103,6 +137,7 @@ def get_task(task_id):
             status_code=401
         )
     except Exception as e:
+        traceback.print_exc()
         print(e)  # Log the exception for debugging
         return Response(
             body={"error": "Internal server error"},
@@ -116,7 +151,7 @@ def create_task():
         request_body = app.current_request.json_body
         task = task_service.create_task(request_body, user["user_id"])
         return Response(
-            body=json.dumps(task, cls=DateTimeEncoder),
+            body=json.dumps(task.dict(), cls=DateTimeEncoder),
             status_code=201
         )
     except UnauthorizedError as e:
@@ -139,7 +174,7 @@ def update_task(task_id):
         user = get_current_user()
         request_body = app.current_request.json_body
         task = task_service.update_task(task_id, request_body, user["user_id"])
-        return json.dumps(task, cls=DateTimeEncoder)
+        return json.dumps(task.dict(), cls=DateTimeEncoder)
     except TaskNotFoundException as e:
         return Response(
             body={"error": str(e)},
