@@ -45,7 +45,7 @@ def get_current_user():
 def health_check():
     return {'status': 'healthy'}
 
-@app.route('/login', methods=['POST'], api_key_required=False)
+@app.route('/api/v1/login', methods=['POST'], api_key_required=False)
 def login():
     request_body = app.current_request.json_body
     try:
@@ -73,7 +73,7 @@ def login():
             status_code=500
         )
 
-@app.route('/register', methods=['POST'], api_key_required=False)  # Make the endpoint public
+@app.route('/api/v1/register', methods=['POST'], api_key_required=False)  # Make the endpoint public
 def register():
     request_body = app.current_request.json_body
     try:
@@ -99,7 +99,7 @@ def register():
             status_code=500
         )
 
-@app.route('/tasks', methods=['GET'])
+@app.route('/api/v1/tasks', methods=['GET'])
 def get_tasks():
     try:
         user = get_current_user()
@@ -120,7 +120,7 @@ def get_tasks():
             status_code=500
         )
 
-@app.route('/tasks/{task_id}', methods=['GET'])
+@app.route('/api/v1/tasks/{task_id}', methods=['GET'])
 def get_task(task_id):
     try:
         user = get_current_user()
@@ -144,7 +144,7 @@ def get_task(task_id):
             status_code=500
         )
 
-@app.route('/tasks', methods=['POST'])
+@app.route('/api/v1/tasks', methods=['POST'])
 def create_task():
     try:
         user = get_current_user()
@@ -168,7 +168,7 @@ def create_task():
             status_code=500
         )
 
-@app.route('/tasks/{task_id}', methods=['PUT'])
+@app.route('/api/v1/tasks/{task_id}', methods=['PUT'])
 def update_task(task_id):
     try:
         user = get_current_user()
@@ -192,7 +192,7 @@ def update_task(task_id):
             status_code=500
         )
 
-@app.route('/tasks/{task_id}', methods=['DELETE'])
+@app.route('/api/v1/tasks/{task_id}', methods=['DELETE'])
 def delete_task(task_id):
     try:
         user = get_current_user()
