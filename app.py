@@ -1,4 +1,4 @@
-from chalice import Chalice, Response, BadRequestError, UnauthorizedError, NotFoundError
+from chalice import Chalice, Response, UnauthorizedError
 from src.services.task_service import TaskService
 from src.services.auth_service import AuthService
 import traceback  # Add this import at the top of the file
