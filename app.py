@@ -36,12 +36,19 @@ class DateTimeEncoder(json.JSONEncoder):
             return obj.isoformat()
         return super().default(obj)
 
+# Add a blacklist to store invalidated tokens
+invalidated_tokens = set()
+
 def get_current_user():
     auth_header = app.current_request.headers.get('Authorization', '')
     if not auth_header.startswith('Bearer '):
         raise UnauthorizedError("Bearer token required")
     
     token = auth_header.split(' ')[1]
+    if token in invalidated_tokens:  # Check if the token is invalidated
+        logger.warning("Token is invalidated")
+        raise UnauthorizedError("Invalid token")
+    
     try:
         payload = auth_service.validate_token(token)
         logger.info(f"Authenticated user: {payload['user_id']}")  # Log the user ID
@@ -227,6 +234,31 @@ def delete_task(task_id):
         )
     except Exception as e:
         logger.error(f"An error occurred while deleting task {task_id}", exc_info=True)
+        return Response(
+            body={"error": "Internal server error"},
+            status_code=500
+        )
+
+@app.route('/api/v1/logout', methods=['POST'], cors=True)
+def logout():
+    logger.info("Logout endpoint called")
+    try:
+        user = get_current_user()
+        auth_header = app.current_request.headers.get('Authorization', '')
+        token = auth_header.split(' ')[1]
+        invalidated_tokens.add(token)  
+        logger.info(f"Token invalidated for user: {user['user_id']}")
+        return Response(
+            body={"message": "Logout successful"},
+            status_code=200
+        )
+    except UnauthorizedError as e:
+        return Response(
+            body={"error": str(e)},
+            status_code=401
+        )
+    except Exception as e:
+        logger.error("An error occurred during logout", exc_info=True)
         return Response(
             body={"error": "Internal server error"},
             status_code=500
