@@ -8,6 +8,13 @@ from src.utils.exceptions import TaskNotFoundException, AuthenticationException,
 import os
 import json
 
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)  # Set the default logging level
+logger = logging.getLogger(__name__)  # Create a logger for this module
+
+
 app = Chalice(app_name='todo-api')
 
 # Configuración Mongo for locaaaaallll and localhost for deploy
@@ -37,16 +44,20 @@ def get_current_user():
     token = auth_header.split(' ')[1]
     try:
         payload = auth_service.validate_token(token)
+        logger.info(f"Authenticated user: {payload['user_id']}")  # Log the user ID
         return payload
     except AuthenticationException as e:
+        logger.warning(f"Authentication failed: {str(e)}")
         raise UnauthorizedError(str(e))
     
 @app.route('/health', methods=['GET'], api_key_required=False, cors=True)
 def health_check():
+    logger.info("Health check endpoint called")
     return {'status': 'healthy'}
 
 @app.route('/api/v1/login', methods=['POST'], api_key_required=False, cors=True)
 def login():
+    logger.info("Login endpoint called")
     request_body = app.current_request.json_body
     try:
         username = request_body.get('username')
@@ -61,13 +72,13 @@ def login():
         token = auth_service.authenticate(username, password)
         return {"token": token}
     except AuthenticationException as e:
+        logger.warning(f"Authentication failed: {str(e)}")
         return Response(
             body={"error": str(e)},
             status_code=401
         )
     except Exception as e:
-        traceback.print_exc()
-        print(e)  # Log the exception for debugging
+        logger.error("An error occurred during login", exc_info=True)
         return Response(
             body={"error": "Internal server error"},
             status_code=500
@@ -75,6 +86,7 @@ def login():
 
 @app.route('/api/v1/register', methods=['POST'], api_key_required=False, cors=True)  # Make the endpoint public
 def register():
+    logger.info("Register endpoint called")
     request_body = app.current_request.json_body
     try:
         username = request_body.get('username')
@@ -93,7 +105,7 @@ def register():
             status_code=201
         )
     except Exception as e:
-        traceback.print_exc()
+        logger.error("An error occurred during user registration", exc_info=True)
         return Response(
             body={"error": "Internal server error"},
             status_code=500
@@ -101,6 +113,7 @@ def register():
 
 @app.route('/api/v1/tasks', methods=['GET'], cors=True)
 def get_tasks():
+    logger.info("Get tasks endpoint called")
     try:
         user = get_current_user()
         tasks = task_service.get_all_tasks(user["user_id"])
@@ -114,7 +127,7 @@ def get_tasks():
             status_code=401
         )
     except Exception as e:
-        print(e)  # Log the exception for debugging
+        logger.error("An error occurred while fetching tasks", exc_info=True)
         return Response(
             body={"error": "Internal server error"},
             status_code=500
@@ -122,6 +135,7 @@ def get_tasks():
 
 @app.route('/api/v1/tasks/{task_id}', methods=['GET'], cors=True)
 def get_task(task_id):
+    logger.info(f"Get task endpoint called for task_id: {task_id}")
     try:
         user = get_current_user()
         task = task_service.get_task_by_id(task_id, user["user_id"])
@@ -137,8 +151,7 @@ def get_task(task_id):
             status_code=401
         )
     except Exception as e:
-        traceback.print_exc()
-        print(e)  # Log the exception for debugging
+        logger.error(f"An error occurred while fetching task {task_id}", exc_info=True)
         return Response(
             body={"error": "Internal server error"},
             status_code=500
@@ -146,6 +159,7 @@ def get_task(task_id):
 
 @app.route('/api/v1/tasks', methods=['POST'], cors=True)
 def create_task():
+    logger.info("Create task endpoint called")
     try:
         user = get_current_user()
         request_body = app.current_request.json_body
@@ -155,14 +169,12 @@ def create_task():
             status_code=201
         )
     except UnauthorizedError as e:
-        traceback.print_exc()
         return Response(
             body={"error": str(e)},
             status_code=401
         )
     except Exception as e:
-        traceback.print_exc()
-        print(e)  # Log the exception for debugging
+        logger.error("An error occurred while creating a task", exc_info=True)
         return Response(
             body={"error": "Internal server error"},
             status_code=500
@@ -170,6 +182,7 @@ def create_task():
 
 @app.route('/api/v1/tasks/{task_id}', methods=['PUT'], cors=True)
 def update_task(task_id):
+    logger.info(f"Update task endpoint called for task_id: {task_id}")
     try:
         user = get_current_user()
         request_body = app.current_request.json_body
@@ -186,7 +199,7 @@ def update_task(task_id):
             status_code=401
         )
     except Exception as e:
-        print(e)  # Log the exception for debugging
+        logger.error(f"An error occurred while updating task {task_id}", exc_info=True)
         return Response(
             body={"error": "Internal server error"},
             status_code=500
@@ -194,6 +207,7 @@ def update_task(task_id):
 
 @app.route('/api/v1/tasks/{task_id}', methods=['DELETE'], cors=True)
 def delete_task(task_id):
+    logger.info(f"Delete task endpoint called for task_id: {task_id}")
     try:
         user = get_current_user()
         task_service.delete_task(task_id, user["user_id"])
@@ -212,7 +226,7 @@ def delete_task(task_id):
             status_code=401
         )
     except Exception as e:
-        print(e)  # Log the exception for debugging
+        logger.error(f"An error occurred while deleting task {task_id}", exc_info=True)
         return Response(
             body={"error": "Internal server error"},
             status_code=500
