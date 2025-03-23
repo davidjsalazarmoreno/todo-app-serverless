@@ -41,7 +41,7 @@ def get_current_user():
     except AuthenticationException as e:
         raise UnauthorizedError(str(e))
     
-@app.route('/health', methods=['GET'], api_key_required=False)
+@app.route('/health', methods=['GET'], api_key_required=False, cors=True)
 def health_check():
     return {'status': 'healthy'}
 
@@ -73,7 +73,7 @@ def login():
             status_code=500
         )
 
-@app.route('/api/v1/register', methods=['POST'], api_key_required=False)  # Make the endpoint public
+@app.route('/api/v1/register', methods=['POST'], api_key_required=False, cors=True)  # Make the endpoint public
 def register():
     request_body = app.current_request.json_body
     try:
@@ -99,7 +99,7 @@ def register():
             status_code=500
         )
 
-@app.route('/api/v1/tasks', methods=['GET'])
+@app.route('/api/v1/tasks', methods=['GET'], cors=True)
 def get_tasks():
     try:
         user = get_current_user()
@@ -120,7 +120,7 @@ def get_tasks():
             status_code=500
         )
 
-@app.route('/api/v1/tasks/{task_id}', methods=['GET'])
+@app.route('/api/v1/tasks/{task_id}', methods=['GET'], cors=True)
 def get_task(task_id):
     try:
         user = get_current_user()
@@ -144,7 +144,7 @@ def get_task(task_id):
             status_code=500
         )
 
-@app.route('/api/v1/tasks', methods=['POST'])
+@app.route('/api/v1/tasks', methods=['POST'], cors=True)
 def create_task():
     try:
         user = get_current_user()
@@ -168,7 +168,7 @@ def create_task():
             status_code=500
         )
 
-@app.route('/api/v1/tasks/{task_id}', methods=['PUT'])
+@app.route('/api/v1/tasks/{task_id}', methods=['PUT'], cors=True)
 def update_task(task_id):
     try:
         user = get_current_user()
@@ -192,7 +192,7 @@ def update_task(task_id):
             status_code=500
         )
 
-@app.route('/api/v1/tasks/{task_id}', methods=['DELETE'])
+@app.route('/api/v1/tasks/{task_id}', methods=['DELETE'], cors=True)
 def delete_task(task_id):
     try:
         user = get_current_user()
