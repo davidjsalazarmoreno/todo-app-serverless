@@ -98,6 +98,42 @@
 			"response": []
 		},
 		{
+			"name": "Logout",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{host}}/api/v1/logout",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"logout"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null,
+							"disabled": true
+						}
+					]
+				},
+				"description": "Generated from cURL: curl -X POST <API_BASE_URL>/api/v1/logout \\\n-H \"Authorization: Bearer <YOUR_JWT_TOKEN>\" \\\n-H \"Content-Type: application/json\""
+			},
+			"response": []
+		},
+		{
 			"name": "Get all tasks",
 			"request": {
 				"method": "GET",

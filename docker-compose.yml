@@ -12,6 +12,8 @@ services:
       - mongodb
     command: >
       sh -c "python /app/src/seed/seed_users.py && chalice local --host 0.0.0.0 --port 8000"
+    volumes:
+      - ~/.aws:/root/.aws
 
   mongodb:
     image: mongo:latest

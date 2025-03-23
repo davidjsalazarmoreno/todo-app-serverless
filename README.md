@@ -33,6 +33,45 @@ use todo_app
 db.users.find().pretty()
 ```
 
+## Deployment
+
+Create a test user, an user group and attach the following policies to the user group, then add the user to the user group.
+
+```
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iam:CreateRole",
+        "iam:PassRole",
+        "iam:AttachRolePolicy",
+        "iam:PutRolePolicy",
+        "iam:GetRole",
+        "lambda:*",
+        "apigateway:*",
+        "s3:*",
+        "logs:*"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+```
+
+Install the AWS Cli and configure your credentials, in OSX.
+
+```
+brew install awscli
+```
+
+Go to mongo atlas and create a free MongoDB cluster: https://cloud.mongodb.com/.
+
+
+
+
+
 ## Extra
 
 Check `seed_users.py` for initial seed and the Postman collection for API testing.

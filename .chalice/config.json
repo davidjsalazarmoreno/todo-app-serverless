@@ -6,8 +6,8 @@
       "dev": {
         "api_gateway_stage": "dev",
         "environment_variables": {
-          "MONGO_URI": "tu-connection-string-mongodb-atlas",
-          "JWT_SECRET": "tu-secreto-jwt"
+          "MONGO_URI": "mongodb://mongodb:27017/",
+          "JWT_SECRET": "test-key-for-jwt-token"
         }
       },
       "prod": {

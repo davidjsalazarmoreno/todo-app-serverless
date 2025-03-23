@@ -10,4 +10,4 @@ class Task(BaseModel):
     status: str = "pending"  # pending, in-progress, completed
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: Optional[datetime] = None
-    user_id: str  # ID del usuario propietario
+    user_id: str 
