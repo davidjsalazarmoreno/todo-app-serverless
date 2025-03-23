@@ -1,5 +1,6 @@
 from pymongo import MongoClient
 import bcrypt
+import uuid
 
 # MongoDB connection URI
 MONGO_URI = "mongodb://mongodb:27017/"  # Use "mongodb" if running inside the container
@@ -7,13 +8,15 @@ DATABASE_NAME = "todo_app"
 
 # Seed data
 users = [
-    {
+    {   
+        "id": str(uuid.uuid4()),
         "username": "testuser",
         "email": "testuser@example.com",
         "hashed_password": bcrypt.hashpw("password123".encode('utf-8'), bcrypt.gensalt()).decode('utf-8'),  # Hash the password
         "is_active": True,
     },
     {
+        "id": str(uuid.uuid4()),
         "username": "admin",
         "email": "admin@example.com",
         "hashed_password": bcrypt.hashpw("adminpassword".encode('utf-8'), bcrypt.gensalt()).decode('utf-8'),
