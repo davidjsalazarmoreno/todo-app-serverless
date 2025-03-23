@@ -45,7 +45,7 @@ def get_current_user():
 def health_check():
     return {'status': 'healthy'}
 
-@app.route('/api/v1/login', methods=['POST'], api_key_required=False)
+@app.route('/api/v1/login', methods=['POST'], api_key_required=False, cors=True)
 def login():
     request_body = app.current_request.json_body
     try:
