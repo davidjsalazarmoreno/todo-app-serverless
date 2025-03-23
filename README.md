@@ -68,9 +68,15 @@ brew install awscli
 
 Go to mongo atlas and create a free MongoDB cluster: https://cloud.mongodb.com/.
 
+Get the Mongo URI and update the config.json.
 
+The start the container and run chalice deploy
 
-
+```
+docker-compose build && docker-compose -f docker-compose.yml up
+docker exec -it todo-app-serverless-api-1 sh
+chalice deploy
+```
 
 ## Extra
 
