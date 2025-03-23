@@ -2,8 +2,7 @@ from pymongo import MongoClient
 import bcrypt
 import uuid
 
-# MongoDB connection URI
-MONGO_URI = "mongodb://mongodb:27017/"  # Use "mongodb" if running inside the container
+MONGO_URI = "mongodb://mongodb:27017/" 
 DATABASE_NAME = "todo_app"
 
 adminId = str(uuid.uuid4())
