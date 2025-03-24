@@ -1,8 +1,8 @@
 import pytest
 from unittest.mock import MagicMock, patch
-from src.services.task_service import TaskService
-from src.models.task import Task
-from src.utils.exceptions import TaskNotFoundException
+from chalicelib.services.task_service import TaskService
+from chalicelib.models.task import Task
+from chalicelib.utils.exceptions import TaskNotFoundException
 
 @pytest.fixture
 def task_repository():

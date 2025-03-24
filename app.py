@@ -1,34 +1,28 @@
 from chalice import Chalice, Response, UnauthorizedError
-from src.services.task_service import TaskService
-from src.services.auth_service import AuthService
-import traceback  # Add this import at the top of the file
-from src.repositories.task_repository import TaskRepository
-from src.repositories.user_repository import UserRepository
-from src.utils.exceptions import TaskNotFoundException, AuthenticationException, UnauthorizedAccessException
+from chalicelib.services.task_service import TaskService
+from chalicelib.services.auth_service import AuthService
+from chalicelib.repositories.task_repository import TaskRepository
+from chalicelib.repositories.user_repository import UserRepository
+from chalicelib.utils.exceptions import TaskNotFoundException, AuthenticationException, UnauthorizedAccessException
 import os
 import json
-
 import logging
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)  # Set the default logging level
-logger = logging.getLogger(__name__)  # Create a logger for this module
+logging.basicConfig(level=logging.INFO) 
+logger = logging.getLogger(__name__)
 
 
 app = Chalice(app_name='todo-api')
 
-# Configuración Mongo for locaaaaallll and localhost for deploy
 MONGO_URI = os.environ.get('MONGO_URI', 'mongodb://mongo:27017/')
 JWT_SECRET = os.environ.get('JWT_SECRET', 'test-key-for-jwt-token')
 
-# Inicializar dependencias
 task_repository = TaskRepository(MONGO_URI)
 user_repository = UserRepository(MONGO_URI)
 task_service = TaskService(task_repository)
 auth_service = AuthService(user_repository, JWT_SECRET)
 
 from datetime import datetime
-
 
 class DateTimeEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -61,6 +55,7 @@ def get_current_user():
 def health_check():
     logger.info("Health check endpoint called")
     return {'status': 'healthy'}
+
 
 @app.route('/api/v1/login', methods=['POST'], api_key_required=False, cors=True)
 def login():
