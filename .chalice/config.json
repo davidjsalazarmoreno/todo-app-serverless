@@ -1,21 +1,22 @@
 {
-    "version": "2.0",
-    "app_name": "todo-api",
-    "api_gateway_stage": "api",
-    "stages": {
-      "dev": {
-        "api_gateway_stage": "dev",
-        "environment_variables": {
-          "MONGO_URI": "mongodb://mongodb:27017/",
-          "JWT_SECRET": "test-key-for-jwt-token"
-        }
-      },
-      "prod": {
-        "api_gateway_stage": "prod",
-        "environment_variables": {
-          "MONGO_URI": "tu-connection-string-mongodb-atlas-prod",
-          "JWT_SECRET": "tu-secreto-jwt-prod"
-        }
+  "version": "2.0",
+  "app_name": "todo-api",
+  "api_gateway_stage": "api",
+  "stages": {
+    "dev": {
+      "api_gateway_stage": "dev",
+      "environment_variables": {
+        "MONGO_URI": "mongodb://mongodb:27017/",
+        "JWT_SECRET": "test-key-for-jwt-token"
       }
-    }
+    },
+    "exclude": [
+      "*.pyc",
+      "*.pyo",
+      "__pycache__",
+      ".git/**",
+      "tests/**",
+      "node_modules/**"
+    ]
   }
+}
