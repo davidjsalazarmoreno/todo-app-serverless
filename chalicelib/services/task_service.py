@@ -21,18 +21,15 @@ class TaskService:
         return self.task_repository.create(task)
 
     def update_task(self, task_id: str, task_data: dict, user_id: str):
-        # Verificar si la tarea existe
         existing_task = self.get_task_by_id(task_id, user_id)
         
         success = self.task_repository.update(task_id, user_id, task_data)
         if not success:
             raise TaskNotFoundException(f"Failed to update task with id {task_id}")
         
-        # Obtener la tarea actualizada
         return self.get_task_by_id(task_id, user_id)
 
     def delete_task(self, task_id: str, user_id: str):
-        # Verificar si la tarea existe y pertenece al usuario
         self.get_task_by_id(task_id, user_id)
         
         success = self.task_repository.delete(task_id, user_id)

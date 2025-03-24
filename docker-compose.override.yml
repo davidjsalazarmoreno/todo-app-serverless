@@ -10,10 +10,7 @@ services:
       - JWT_SECRET=test-key-for-jwt-token
     depends_on:
       - mongodb
-    command: >
-      sh -c "python /app/chalicelib/seed/seed_users.py && chalice local --host 0.0.0.0 --port 8000"
-    volumes:
-      - ~/.aws:/root/.aws
+    command: pytest --maxfail=1 --disable-warnings -v
 
   mongodb:
     image: mongo:latest
