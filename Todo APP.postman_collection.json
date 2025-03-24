@@ -41,7 +41,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"username\": \"myuser\",\n  \"email\": \"myuser@example.com\",\n  \"password\": \"2544fer43rdsdsdf\"\n}",
+					"raw": "{\n  \"username\": \"admsssin\",\n  \"email\": \"adsssmin@example.com\",\n  \"password\": \"adminpassworsssd\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
